@@ -1,0 +1,35 @@
+# FactoidFlyCreative configuration file
+
+# Configuration for creative mode
+Creative:
+
+  # Disallow to drop any item?
+  # Override permission: flycreative.override.nodrop
+  NoDrop: true
+  
+  # Disallow to open a chest, furnace, ender chest, ...
+  # Override permission: flycreative.override.noopenchest
+  NoOpenChest: true
+
+  # Disallow to build outside a cuboid if the player is near the border
+  # Override permission: flycreative.override.nobuildoutside
+  NoBuildOutside: true
+  
+  # List of banned items in creative mode
+  # Override permission: flycreative.override.allowbanneditems
+  # You have a list of material names here: 
+  # http://jd.bukkit.org/dev/apidocs/org/bukkit/Material.html
+  bannedItems:
+    - EXP_BOTTLE
+    - DIAMOND_BLOCK
+    - DIAMOND_ORE
+    - DIAMOND
+    - IRON_BLOCK
+    - IRON_ORE
+    - IRON_INGOT
+    - GOLD_BLOCK
+    - GOLD_ORE
+    - GOLD_INGOT
+    - EMERALD_BLOCK
+    - EMERALD_ORE
+    - EMERALD

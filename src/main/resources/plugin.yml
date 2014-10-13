@@ -1,0 +1,52 @@
+name: FactoidFlyCreative
+main: me.tabinol.factoidflycreative.FactoidFlyCreative
+version: ${project.version}
+depend: [Factoid]
+commands:
+    fcreload:
+        description: Reload the configuration
+        usage: /<command>
+        permission: flycreative.reload
+        permission-message: You don't have <permission>
+permissions:
+    flycreative.*:
+        description: Gives access to all flyncrative permissions
+        default: false
+        children:
+            flycreative.ignorefly: true
+            flycreative.ignorecreative: true
+            flycreative.override.*: true
+    flycreative.override.*:
+        description: Gives access to all override permissions
+        default: false
+        children:
+            flycreative.override.nodrop: true
+            flycreative.override.noopenchest: true
+            flycreative.override.nobuildoutside: true
+            flycreative.override.allowbanneditems: true
+    flycreative.reload:
+        description: Can reload the configuration
+        default: op
+    flycreative.ignorefly:
+        description: Ignore fly change in cuboid
+        default: false
+    flycreative.ignorecreative:
+        description: Ignore creative mode change in cuboid
+        default: false
+        children:
+            flycreative.override.nodrop: true
+            flycreative.override.noopenchest: true
+            flycreative.override.nobuildoutside: true
+            flycreative.override.allowbanneditems: true
+    flycreative.override.nodrop:
+        description: Can drop items in creative
+        default: false
+    flycreative.override.noopenchest:
+        description: Can open chests in creative 
+        default: false
+    flycreative.override.nobuildoutside:
+        description: Can build outside the zone in creative
+        default: false
+    flycreative.override.allowbanneditems:
+        description: Can have banned items in creative
+        default: false
