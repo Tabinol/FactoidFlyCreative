@@ -18,6 +18,8 @@
  */
 package me.tabinol.factoidflycreative.listeners;
 
+import me.tabinol.factoidapi.FactoidAPI;
+import me.tabinol.factoidapi.event.LandModifyEvent;
 import me.tabinol.factoidapi.event.PlayerLandChangeEvent;
 import me.tabinol.factoidflycreative.creative.Creative;
 import me.tabinol.factoidflycreative.fly.Fly;
@@ -61,9 +63,17 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPlayerLandChangeEvent(PlayerLandChangeEvent event) {
+    public void onPlayerLandChange(PlayerLandChangeEvent event) {
 
         setFlyCreative(event, event.getPlayer(), new LandAccess(event.getLandOrOutside()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onLandModify(LandModifyEvent event) {
+
+        for(Player player : event.getLand().getWorld().getPlayers()) {
+        	setFlyCreative(event, player, new LandAccess(FactoidAPI.iLands().getLandOrOutsideArea(player.getLocation())));
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
