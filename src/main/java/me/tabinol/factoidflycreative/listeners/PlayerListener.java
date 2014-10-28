@@ -20,6 +20,7 @@ package me.tabinol.factoidflycreative.listeners;
 
 import me.tabinol.factoidapi.FactoidAPI;
 import me.tabinol.factoidapi.event.LandModifyEvent;
+import me.tabinol.factoidapi.event.LandModifyEvent.LandModifyReason;
 import me.tabinol.factoidapi.event.PlayerLandChangeEvent;
 import me.tabinol.factoidflycreative.creative.Creative;
 import me.tabinol.factoidflycreative.fly.Fly;
@@ -71,9 +72,24 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onLandModify(LandModifyEvent event) {
 
-        for(Player player : event.getLand().getWorld().getPlayers()) {
-        	setFlyCreative(event, player, new LandAccess(FactoidAPI.iLands().getLandOrOutsideArea(player.getLocation())));
-        }
+        LandModifyReason reason = event.getLandModifyReason();
+    	
+    	// Test to be specific (take specific players)
+        if(reason == LandModifyReason.AREA_ADD || reason == LandModifyReason.AREA_REMOVE
+    			|| reason == LandModifyReason.AREA_REPLACE) {
+        	
+        	// Land area change, all players in the world affected
+        	for(Player player : event.getLand().getWorld().getPlayers()) {
+            	setFlyCreative(event, player, new LandAccess(FactoidAPI.iLands().getLandOrOutsideArea(player.getLocation())));
+            }
+    	} else if(reason != LandModifyReason.FLAG_SET && reason != LandModifyReason.FLAG_UNSET
+    			&& reason != LandModifyReason.RENAME) {
+    	
+    		// No land resize or area replace, only players in the land affected
+    		for(Player player : event.getLand().getPlayersInLandAndChildren()) {
+    			setFlyCreative(event, player, new LandAccess(FactoidAPI.iLands().getLandOrOutsideArea(player.getLocation())));
+    		}
+    	}
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
