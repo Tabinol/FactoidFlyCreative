@@ -20,8 +20,8 @@ package me.tabinol.factoidflycreative.fly;
 
 import me.tabinol.factoidapi.FactoidAPI;
 import me.tabinol.factoidapi.event.PlayerLandChangeEvent;
+import me.tabinol.factoidapi.lands.IDummyLand;
 import me.tabinol.factoidapi.parameters.IPermissionType;
-import me.tabinol.factoidflycreative.permissions.LandAccess;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -40,10 +40,10 @@ public class Fly {
         permissionType = FactoidAPI.iParameters().registerPermissionType("FLY", false);
     }
 
-    public void fly(Event event, Player player, LandAccess landAccess) {
+    public void fly(Event event, Player player, IDummyLand dummyLand) {
 
         if (!player.hasPermission(FLY_IGNORE_PERM)) {
-            if (askFlyFlag(player, landAccess)) {
+            if (askFlyFlag(player, dummyLand)) {
                 if (!player.getAllowFlight()) {
                     player.setAllowFlight(true);
 
@@ -73,8 +73,8 @@ public class Fly {
         }
     }
 
-    private boolean askFlyFlag(Player player, LandAccess landAccess) {
+    private boolean askFlyFlag(Player player, IDummyLand dummyLand) {
 
-        return landAccess.isPermissionTrue(permissionType, player);
+    	return dummyLand.checkPermissionAndInherit(player, permissionType);
     }
 }

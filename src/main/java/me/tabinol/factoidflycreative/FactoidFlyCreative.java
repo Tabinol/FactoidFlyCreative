@@ -18,7 +18,9 @@
  */
 package me.tabinol.factoidflycreative;
 
+import me.tabinol.factoidflycreative.config.FlyCreativeConfig;
 import me.tabinol.factoidflycreative.listeners.PlayerListener;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -28,24 +30,21 @@ public class FactoidFlyCreative extends JavaPlugin implements Listener {
 
     private PlayerListener playerListener;
     private static FactoidFlyCreative thisPlugin;
+    private static FlyCreativeConfig config;
+
 
     @Override
     public void onEnable() {
             
         thisPlugin = this;
 
-        // Load configuration
-        this.saveDefaultConfig();
-        loadFNCConfig();
+        // Config
+        config = new FlyCreativeConfig();
+        config.loadConfig();
 
         // Activate listeners
         playerListener = new PlayerListener();
         getServer().getPluginManager().registerEvents(playerListener, this);
-    }
-
-    private void loadFNCConfig() {
-
-        this.reloadConfig();
     }
 
     public static FactoidFlyCreative getThisPlugin() {
@@ -53,12 +52,17 @@ public class FactoidFlyCreative extends JavaPlugin implements Listener {
         return thisPlugin;
     }
     
+    public static FlyCreativeConfig getConf() {
+
+        return config;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 
         if (cmd.getName().equalsIgnoreCase("fcreload")) {
 
-            loadFNCConfig();
+        	FactoidFlyCreative.getConf().reLoadConfig();
             sender.sendMessage("Configuration reloaded!");
 
             return true;

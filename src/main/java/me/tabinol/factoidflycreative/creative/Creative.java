@@ -18,14 +18,12 @@
  */
 package me.tabinol.factoidflycreative.creative;
 
-import java.util.ListIterator;
-import java.util.logging.Level;
-
 import me.tabinol.factoidapi.FactoidAPI;
 import me.tabinol.factoidapi.event.PlayerLandChangeEvent;
+import me.tabinol.factoidapi.lands.IDummyLand;
 import me.tabinol.factoidapi.parameters.IPermissionType;
 import me.tabinol.factoidflycreative.FactoidFlyCreative;
-import me.tabinol.factoidflycreative.permissions.LandAccess;
+import me.tabinol.factoidflycreative.config.FlyCreativeConfig;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -44,28 +42,25 @@ public class Creative {
 
     public final static String CREATIVE_IGNORE_PERM = "flycreative.ignorecreative";
     public final static String OVERRIDE_NODROP_PERM = "flycreative.override.nodrop";
-    public final static String NODROP_KEY = "Creative.NoDrop";
     public final static String OVERRIDE_NOOPENCHEST_PERM = "flycreative.override.noopenchest";
-    public final static String NOOPENCHEST_KEY = "Creative.NoOpenChest";
     public final static String OVERRIDE_NOBUILDOUTSIDE_PERM = "flycreative.override.nobuildoutside";
-    public final static String NOBUILDOUTSIDE_KEY = "Creative.NoBuildOutside";
     public final static String OVERRIDE_BANNEDITEMS_PERM = "flycreative.override.allowbanneditems";
-    public final static String BANNEDITEMS_KEY = "Creative.bannedItems";
-    private final FactoidFlyCreative thisPlugin;
+    private final FlyCreativeConfig conf;
     private final IPermissionType permissionType;
 
     public Creative() {
 
-        this.thisPlugin = FactoidFlyCreative.getThisPlugin();
+        FactoidFlyCreative.getThisPlugin();
+        conf = FactoidFlyCreative.getConf();
 
         // Register flags
         permissionType = FactoidAPI.iParameters().registerPermissionType("CREATIVE", false);
     }
 
-    public boolean creative(Event event, Player player, LandAccess landAccess) {
+    public boolean creative(Event event, Player player, IDummyLand dummyLand) {
 
         if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
-            if (askCreativeFlag(player, landAccess)) {
+            if (askCreativeFlag(player, dummyLand)) {
                 if (player.getGameMode() != GameMode.CREATIVE) {
                     player.setGameMode(GameMode.CREATIVE);
                 }
@@ -94,7 +89,7 @@ public class Creative {
 
     public boolean dropItem(PlayerDropItemEvent event, Player player) {
 
-        if (thisPlugin.getConfig().getBoolean(NODROP_KEY)
+        if (conf.isNoDrop()
                 && !player.hasPermission(OVERRIDE_NODROP_PERM)) {
 
             return true;
@@ -105,7 +100,7 @@ public class Creative {
 
     public void invOpen(InventoryOpenEvent event, HumanEntity player) {
 
-        if (thisPlugin.getConfig().getBoolean(NOOPENCHEST_KEY)
+        if (conf.isNoOpenChest()
                 && !player.hasPermission(OVERRIDE_NOOPENCHEST_PERM)) {
 
             InventoryType it = event.getView().getType();
@@ -124,7 +119,7 @@ public class Creative {
 
         Location blockLoc;
 
-        if (thisPlugin.getConfig().getBoolean(NOBUILDOUTSIDE_KEY)
+        if (conf.isNoBuildOutside()
                 && !player.hasPermission(OVERRIDE_NOBUILDOUTSIDE_PERM)) {
 
             if (event instanceof BlockBreakEvent) {
@@ -132,7 +127,7 @@ public class Creative {
             } else {
                 blockLoc = ((BlockPlaceEvent) event).getBlockPlaced().getLocation();
             }
-            if (!askCreativeFlag(player, new LandAccess(blockLoc))) {
+            if (!askCreativeFlag(player, FactoidAPI.iLands().getLandOrOutsideArea(blockLoc))) {
 
                 return true;
             }
@@ -144,21 +139,14 @@ public class Creative {
 
         if (!player.hasPermission(OVERRIDE_BANNEDITEMS_PERM)) {
 
-            ListIterator<String> it = thisPlugin.getConfig().getStringList(BANNEDITEMS_KEY).listIterator();
-            while (it.hasNext()) {
-                String name = it.next();
-                Material mat = Material.getMaterial(name);
-                if (mat != null) {
-                    event.getPlayer().getInventory().remove(mat);
-                } else {
-                    thisPlugin.getLogger().log(Level.WARNING, "bannedItems: \"{0}\" is not a valid!", name);
-                }
+            for(Material mat : conf.getBannedItems()) {
+                event.getPlayer().getInventory().remove(mat);
             }
         }
     }
 
-    private boolean askCreativeFlag(Player player, LandAccess landAccess) {
+    private boolean askCreativeFlag(Player player, IDummyLand dummyLand) {
 
-        return landAccess.isPermissionTrue(permissionType, player);
+        return dummyLand.checkPermissionAndInherit(player, permissionType);
     }
 }

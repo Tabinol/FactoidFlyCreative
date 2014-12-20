@@ -1,5 +1,10 @@
 # FactoidFlyCreative configuration file
 
+# Game Modes to ignore
+IgnoredGameMode:
+  - ADVENTURE
+  - SPECTATOR
+
 # Configuration for creative mode
 Creative:
 
