@@ -18,6 +18,8 @@
  */
 package me.tabinol.factoidflycreative;
 
+import java.io.IOException;
+
 import me.tabinol.factoidflycreative.config.FlyCreativeConfig;
 import me.tabinol.factoidflycreative.listeners.PlayerListener;
 
@@ -25,6 +27,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.MetricsLite;
 
 public class FactoidFlyCreative extends JavaPlugin implements Listener {
 
@@ -45,6 +48,14 @@ public class FactoidFlyCreative extends JavaPlugin implements Listener {
         // Activate listeners
         playerListener = new PlayerListener();
         getServer().getPluginManager().registerEvents(playerListener, this);
+
+        // Start Plugin Metrics
+        try {
+            MetricsLite metrics = new MetricsLite(this);
+            metrics.start();
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+        }
     }
 
     public static FactoidFlyCreative getThisPlugin() {
