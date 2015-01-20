@@ -110,10 +110,9 @@ public class PlayerListener implements Listener {
 
     	Player player = event.getPlayer();
     	
-        if(!ignoredGMPlayers.contains(player) 
+        if(!ignoredGMPlayers.remove(player) 
         		&& !conf.getIgnoredGameMode().contains(event.getNewGameMode())
         		&& !player.hasPermission(Creative.CREATIVE_IGNORE_PERM)) {
-        	ignoredGMPlayers.remove(player);
         	event.setCancelled(true);
         }
     }
