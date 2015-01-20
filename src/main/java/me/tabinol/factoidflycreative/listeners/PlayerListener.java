@@ -30,6 +30,7 @@ import me.tabinol.factoidflycreative.config.FlyCreativeConfig;
 import me.tabinol.factoidflycreative.creative.Creative;
 import me.tabinol.factoidflycreative.fly.Fly;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -44,6 +45,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class PlayerListener implements Listener {
 
@@ -60,6 +62,11 @@ public class PlayerListener implements Listener {
         ignoredGMPlayers = new ArrayList<Player>();
     }
 
+    public void addIgnoredGMPlayers(Player player) {
+    	
+    	ignoredGMPlayers.add(player);
+    }
+    
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
 
@@ -80,15 +87,34 @@ public class PlayerListener implements Listener {
         setFlyCreative(event, event.getPlayer(), event.getLandOrOutside());
     }
 
+    // Bugfix when tp is from an other worlds
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+    	
+    	final Player player = event.getPlayer();
+    	
+    	if(event.getFrom().getWorld() != event.getTo().getWorld()) {
+    		Bukkit.getScheduler().runTaskLater(FactoidFlyCreative.getThisPlugin(), new Runnable() {
+    			public void run() {
+    				if(player.isOnline()) {
+    					setFlyCreative(null, player, 
+    							FactoidAPI.iLands().getLandOrOutsideArea(player.getLocation()));
+    				}
+    			}
+    			}, 1);
+    	}
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
 
     	Player player = event.getPlayer();
     	
-        if(ignoredGMPlayers.contains(player) 
-        		&& conf.getIgnoredGameMode().contains(event.getNewGameMode())) {
+        if(!ignoredGMPlayers.contains(player) 
+        		&& !conf.getIgnoredGameMode().contains(event.getNewGameMode())
+        		&& !player.hasPermission(Creative.CREATIVE_IGNORE_PERM)) {
         	ignoredGMPlayers.remove(player);
-        	setFlyCreative(event, player, FactoidAPI.iLands().getLandOrOutsideArea(event.getPlayer().getLocation()));
+        	event.setCancelled(true);
         }
     }
 

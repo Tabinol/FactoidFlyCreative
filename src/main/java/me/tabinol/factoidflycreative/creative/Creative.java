@@ -62,7 +62,8 @@ public class Creative {
         if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
             if (askCreativeFlag(player, dummyLand)) {
                 if (player.getGameMode() != GameMode.CREATIVE) {
-                    player.setGameMode(GameMode.CREATIVE);
+                    FactoidFlyCreative.getPlayerListener().addIgnoredGMPlayers(player);
+                	player.setGameMode(GameMode.CREATIVE);
                 }
             } else {
                 if (player.getGameMode() == GameMode.CREATIVE) {
@@ -71,6 +72,7 @@ public class Creative {
                         // Return the player in the last cuboid if he is flying.
                         ((PlayerLandChangeEvent) event).setCancelled(true);
                     } else {
+                        FactoidFlyCreative.getPlayerListener().addIgnoredGMPlayers(player);
                         player.setGameMode(GameMode.SURVIVAL);
                     }
                 }
@@ -83,6 +85,7 @@ public class Creative {
     public void setGM(Player player, GameMode gm) {
 
         if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
+            FactoidFlyCreative.getPlayerListener().addIgnoredGMPlayers(player);
             player.setGameMode(gm);
         }
     }

@@ -31,7 +31,7 @@ import org.mcstats.MetricsLite;
 
 public class FactoidFlyCreative extends JavaPlugin implements Listener {
 
-    private PlayerListener playerListener;
+    private static PlayerListener playerListener;
     private static FactoidFlyCreative thisPlugin;
     private static FlyCreativeConfig config;
 
@@ -66,6 +66,11 @@ public class FactoidFlyCreative extends JavaPlugin implements Listener {
     public static FlyCreativeConfig getConf() {
 
         return config;
+    }
+
+    public static PlayerListener getPlayerListener() {
+
+        return playerListener;
     }
 
     @Override
